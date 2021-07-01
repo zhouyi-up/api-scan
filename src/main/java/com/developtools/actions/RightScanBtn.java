@@ -1,6 +1,8 @@
 package com.developtools.actions;
 
 import com.alibaba.fastjson.JSON;
+import com.developtools.model.ClassApiInfo;
+import com.developtools.utils.ApiUtils;
 import com.developtools.utils.ModuleUtils;
 import com.developtools.utils.PsiAnnotationUtils;
 import com.google.common.collect.Lists;
@@ -47,22 +49,8 @@ public class RightScanBtn extends AnAction {
     }
 
     private void handlePsiClass(PsiClass psiClass) {
-        String requestBasePath = "";
-        PsiAnnotation annotation = psiClass.getAnnotation("org.springframework.web.bind.annotation.RequestMapping");
-        if (annotation != null){
-            List<JvmAnnotationAttribute> attributes = annotation.getAttributes();
-            List<JvmAnnotationAttribute> basePathList = attributes.stream()
-                    .filter(attr -> attr.getAttributeName().contains("value"))
-                    .collect(Collectors.toList());
-            if (basePathList != null && basePathList.size() > 0){
-                JvmAnnotationAttributeValue attributeValue = basePathList.get(0).getAttributeValue();
-                if (attributeValue instanceof JvmAnnotationConstantValue){
-                    Object constantValue = ((JvmAnnotationConstantValue) attributeValue).getConstantValue();
-                    requestBasePath = String.valueOf(constantValue);
-                    System.out.println("[INFO] Find Class RequestMapping value: " + requestBasePath);
-                }
-            }
-        }
+        ClassApiInfo classApiInfo = ApiUtils.toClassApiInfo(psiClass);
+
         PsiMethod[] methods = psiClass.getMethods();
         for (PsiMethod method : methods) {
             PsiAnnotation[] annotations = method.getModifierList().getAnnotations();
