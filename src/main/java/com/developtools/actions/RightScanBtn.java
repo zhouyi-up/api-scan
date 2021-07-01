@@ -1,7 +1,11 @@
 package com.developtools.actions;
 
 import com.alibaba.fastjson.JSON;
+import com.developtools.utils.ModuleUtils;
+import com.developtools.utils.PsiAnnotationUtils;
+import com.google.common.collect.Lists;
 import com.intellij.lang.Language;
+import com.intellij.lang.jvm.annotation.JvmAnnotationAttribute;
 import com.intellij.lang.jvm.annotation.JvmAnnotationAttributeValue;
 import com.intellij.lang.jvm.annotation.JvmAnnotationConstantValue;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -26,72 +30,61 @@ public class RightScanBtn extends AnAction {
     @Override
     public void actionPerformed(AnActionEvent e) {
         // TODO: insert action logic here
-        System.out.println(e.getClass());
-        PsiFile psiFile = e.getData(CommonDataKeys.PSI_FILE);
-        if (psiFile != null){
-            System.out.println(psiFile.getFileType().getName());
-            return;
-        }
         Project project = e.getProject();
         Module[] modules = ModuleManager.getInstance(project).getModules();
+
         for (Module module : modules) {
 
-            System.out.println(module.getClass().getName());
-            GlobalSearchScope moduleScope = module.getModuleScope();
-            JavaAnnotationIndex javaAnnotationIndex = JavaAnnotationIndex.getInstance();
-            Collection<PsiAnnotation> controllers = javaAnnotationIndex
-                    .get("Controller", project, moduleScope);
+            ArrayList<String> controllerAnn = Lists.newArrayList("Controller", "RestController");
+            List<PsiAnnotation> controllerList = ModuleUtils.findPsiClassForAnnotationList(project, module, controllerAnn);
 
-            Collection<PsiAnnotation> restController = javaAnnotationIndex.get("RestController", project, moduleScope);
-
-            List<PsiAnnotation> controllerList = new ArrayList<>();
-            controllerList.addAll(controllers);
-            controllerList.addAll(restController);
-
-            List<PsiClass> psiClassList = controllerList.stream()
-                    .map(c -> {
-                        PsiElement parent = c.getParent();
-                        PsiElement parentClass = parent.getParent();
-
-                        if (parentClass instanceof PsiClass) {
-                            return (PsiClass) parentClass;
-                        }
-                        return null;
-                    })
-                    .filter(Objects::nonNull)
-                    .collect(Collectors.toList());
+            List<PsiClass> psiClassList = PsiAnnotationUtils.toPsiClass(controllerList);
 
             for (PsiClass psiClass : psiClassList) {
+                handlePsiClass(psiClass);
+            }
+        }
+    }
 
-                PsiAnnotation annotation = psiClass.getAnnotation("org.springframework.web.bind.annotation.RequestMapping");
-                if (annotation != null){
-                    System.out.println(annotation.getQualifiedName());
+    private void handlePsiClass(PsiClass psiClass) {
+        String requestBasePath = "";
+        PsiAnnotation annotation = psiClass.getAnnotation("org.springframework.web.bind.annotation.RequestMapping");
+        if (annotation != null){
+            List<JvmAnnotationAttribute> attributes = annotation.getAttributes();
+            List<JvmAnnotationAttribute> basePathList = attributes.stream()
+                    .filter(attr -> attr.getAttributeName().contains("value"))
+                    .collect(Collectors.toList());
+            if (basePathList != null && basePathList.size() > 0){
+                JvmAnnotationAttributeValue attributeValue = basePathList.get(0).getAttributeValue();
+                if (attributeValue instanceof JvmAnnotationConstantValue){
+                    Object constantValue = ((JvmAnnotationConstantValue) attributeValue).getConstantValue();
+                    requestBasePath = String.valueOf(constantValue);
+                    System.out.println("[INFO] Find Class RequestMapping value: " + requestBasePath);
                 }
-
-                PsiMethod[] methods = psiClass.getMethods();
-                for (PsiMethod method : methods) {
-                    PsiAnnotation[] annotations = method.getModifierList().getAnnotations();
-                    System.out.println(method.getName());
-                    for (PsiAnnotation psiAnnotation : annotations) {
-                        String qualifiedName = psiAnnotation.getQualifiedName();
-                        System.out.println(qualifiedName);
-                        psiAnnotation.getAttributes().forEach(a -> {
-                            JvmAnnotationAttributeValue attributeValue = a.getAttributeValue();
-                            if (attributeValue instanceof JvmAnnotationConstantValue){
-                                JvmAnnotationConstantValue jvmAnnotationConstantValue = (JvmAnnotationConstantValue) attributeValue;
-                                System.out.println("---- " + jvmAnnotationConstantValue.getConstantValue());
-                            }
-                            System.out.println(a.getAttributeName() + "-" + attributeValue);
-                        });
+            }
+        }
+        PsiMethod[] methods = psiClass.getMethods();
+        for (PsiMethod method : methods) {
+            PsiAnnotation[] annotations = method.getModifierList().getAnnotations();
+            System.out.println(method.getName());
+            for (PsiAnnotation psiAnnotation : annotations) {
+                String qualifiedName = psiAnnotation.getQualifiedName();
+                System.out.println(qualifiedName);
+                psiAnnotation.getAttributes().forEach(a -> {
+                    JvmAnnotationAttributeValue attributeValue = a.getAttributeValue();
+                    if (attributeValue instanceof JvmAnnotationConstantValue){
+                        JvmAnnotationConstantValue jvmAnnotationConstantValue = (JvmAnnotationConstantValue) attributeValue;
+                        System.out.println("---- " + jvmAnnotationConstantValue.getConstantValue());
                     }
+                    System.out.println(a.getAttributeName() + "-" + attributeValue);
+                });
+            }
 
-                    PsiDocComment docComment = method.getDocComment();
-                    String text = docComment.getText();
-                    System.out.println(text);
-                    for (PsiDocTag tag : docComment.getTags()) {
-                        System.out.println(tag.getName());
-                    }
-                }
+            PsiDocComment docComment = method.getDocComment();
+            String text = docComment.getText();
+            System.out.println(text);
+            for (PsiDocTag tag : docComment.getTags()) {
+                System.out.println(tag.getName());
             }
         }
     }
