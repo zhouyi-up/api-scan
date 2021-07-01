@@ -13,6 +13,8 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.java.stubs.index.JavaAnnotationIndex;
+import com.intellij.psi.javadoc.PsiDocComment;
+import com.intellij.psi.javadoc.PsiDocTag;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.thoughtworks.qdox.model.JavaAnnotation;
 
@@ -81,6 +83,13 @@ public class RightScanBtn extends AnAction {
                             }
                             System.out.println(a.getAttributeName() + "-" + attributeValue);
                         });
+                    }
+
+                    PsiDocComment docComment = method.getDocComment();
+                    String text = docComment.getText();
+                    System.out.println(text);
+                    for (PsiDocTag tag : docComment.getTags()) {
+                        System.out.println(tag.getName());
                     }
                 }
             }
