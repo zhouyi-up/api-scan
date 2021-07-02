@@ -2,7 +2,9 @@ package com.developtools.actions;
 
 import com.alibaba.fastjson.JSON;
 import com.developtools.model.ClassApiInfo;
+import com.developtools.model.MethodApiInfo;
 import com.developtools.utils.ApiUtils;
+import com.developtools.utils.LogsUtils;
 import com.developtools.utils.ModuleUtils;
 import com.developtools.utils.PsiAnnotationUtils;
 import com.google.common.collect.Lists;
@@ -53,27 +55,8 @@ public class RightScanBtn extends AnAction {
 
         PsiMethod[] methods = psiClass.getMethods();
         for (PsiMethod method : methods) {
-            PsiAnnotation[] annotations = method.getModifierList().getAnnotations();
-            System.out.println(method.getName());
-            for (PsiAnnotation psiAnnotation : annotations) {
-                String qualifiedName = psiAnnotation.getQualifiedName();
-                System.out.println(qualifiedName);
-                psiAnnotation.getAttributes().forEach(a -> {
-                    JvmAnnotationAttributeValue attributeValue = a.getAttributeValue();
-                    if (attributeValue instanceof JvmAnnotationConstantValue){
-                        JvmAnnotationConstantValue jvmAnnotationConstantValue = (JvmAnnotationConstantValue) attributeValue;
-                        System.out.println("---- " + jvmAnnotationConstantValue.getConstantValue());
-                    }
-                    System.out.println(a.getAttributeName() + "-" + attributeValue);
-                });
-            }
-
-            PsiDocComment docComment = method.getDocComment();
-            String text = docComment.getText();
-            System.out.println(text);
-            for (PsiDocTag tag : docComment.getTags()) {
-                System.out.println(tag.getName());
-            }
+            MethodApiInfo methodApiInfo = ApiUtils.toMethodApiInfo(method);
+            LogsUtils.info(JSON.toJSONString(methodApiInfo));
         }
     }
 }

@@ -1,7 +1,7 @@
 <idea-plugin>
-    <id>com.developtools.api-scan</id>
-    <name>Plugin display name here</name>
-    <vendor email="support@yourcompany.com" url="http://www.yourcompany.com">YourCompany</vendor>
+    <id>com.developtools.api-doc</id>
+    <name>API Doc</name>
+    <vendor email="corelevip@gmail.com" url="http://j-tools.cn">liujun</vendor>
 
     <description><![CDATA[
     Enter short description for your plugin here.<br>
