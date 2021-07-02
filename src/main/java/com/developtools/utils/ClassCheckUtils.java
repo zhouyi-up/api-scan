@@ -12,7 +12,11 @@ public class ClassCheckUtils {
             "java.lang.Integer",
             "java.lang.Long",
             "java.lang.Short",
-            "java.lang.Double"
+            "java.lang.Double",
+            "int",
+            "long",
+            "double",
+            "short"
     };
 
     public static boolean isBasicClass(String className){

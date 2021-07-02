@@ -11,6 +11,7 @@ import com.intellij.lang.jvm.annotation.JvmAnnotationAttribute;
 import com.intellij.lang.jvm.annotation.JvmAnnotationAttributeValue;
 import com.intellij.lang.jvm.annotation.JvmAnnotationConstantValue;
 import com.intellij.psi.*;
+import com.intellij.psi.impl.source.PsiClassReferenceType;
 import com.intellij.psi.javadoc.PsiDocComment;
 import com.intellij.psi.javadoc.PsiDocTag;
 import org.apache.commons.lang3.StringUtils;
@@ -110,21 +111,39 @@ public class ApiUtils {
         PsiParameterList parameterList = psiMethod.getParameterList();
         PsiParameter[] parameters = parameterList.getParameters();
         for (PsiParameter parameter : parameters) {
-            ParameterApiInfo parameterApiInfo = toParameterApiInfo(parameter);
+            List<ParameterApiInfo> parameterApiInfos = toParameterApiInfo(parameter, methodApiInfo.getAttr());
 
         }
         return methodApiInfo;
     }
 
-    public static ParameterApiInfo toParameterApiInfo(PsiParameter parameter){
-        ParameterApiInfo parameterApiInfo = new ParameterApiInfo();
+    public static List<ParameterApiInfo> toParameterApiInfo(PsiParameter parameter, Map<String,Object> attrs){
+        List<ParameterApiInfo> list = Lists.newArrayList();
 
-        String name = parameter.getName();
-        parameterApiInfo.setName(name);
+        PsiType type = parameter.getType();
+        String className = type.getCanonicalText();
+        boolean isBasicClass = ClassCheckUtils.isBasicClass(className);
+        if (isBasicClass){
+            ParameterApiInfo parameterApiInfo = new ParameterApiInfo();
 
-        String className = parameter.getType().getCanonicalText();
-        parameterApiInfo.setTypeName(className);
+            String name = parameter.getName();
+            parameterApiInfo.setName(name);
+            parameterApiInfo.setTypeName(className);
 
-        return parameterApiInfo;
+            String[] split = className.split("\\.");
+            parameterApiInfo.setTypeShortName(split[split.length-1]);
+
+            Object object = attrs.get(name);
+            if (object != null){
+                parameterApiInfo.setDesc(String.valueOf(object));
+            }
+            list.add(parameterApiInfo);
+        }
+        else {
+
+
+        }
+
+        return list;
     }
 }
