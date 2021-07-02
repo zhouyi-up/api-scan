@@ -13,7 +13,7 @@ import java.util.Map;
 public class ClassApiInfo {
     private String basePath;
     private String desc;
-    private Map<String, String> attr = Maps.newHashMap();
+    private Map<String, Object> attr = Maps.newHashMap();
 
     private String className;
     private String classShortName;

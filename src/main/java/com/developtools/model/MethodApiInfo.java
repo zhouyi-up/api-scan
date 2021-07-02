@@ -18,5 +18,5 @@ public class MethodApiInfo {
     private String path;
 
     private String desc;
-    private Map<String, String> attr = Maps.newHashMap();
+    private Map<String, Object> attr = Maps.newHashMap();
 }

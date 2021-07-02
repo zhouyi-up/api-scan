@@ -2,8 +2,10 @@ package com.developtools.utils;
 
 
 import com.google.common.collect.Maps;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.javadoc.PsiDocComment;
 import com.intellij.psi.javadoc.PsiDocTag;
+import com.intellij.psi.javadoc.PsiDocTagValue;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -17,10 +19,11 @@ import java.util.stream.Collectors;
  */
 public class PsiDocCommentUtils {
 
+    public static final String PARAM = "param";
     private static Pattern DOC_PATTERN = Pattern.compile("\\/\\*\\* {0,}\\*{0,} {0,}(.{0,}) {0,}\\*{0,} {0,}@.{0,}\\*\\/");
     private static Pattern DOC_PATTERN_ALL = Pattern.compile("\\/\\*\\* {0,}\\*{0,} {0,}(.{0,}) {0,}\\*{0,} {0,}@{0,}.{0,}\\*\\/");
 
-    public static Map<String, String> toTagMap(PsiDocComment psiDocComment){
+    public static Map<String, Object> toTagMap(PsiDocComment psiDocComment){
         if (psiDocComment == null){
             return Maps.newHashMap();
         }
@@ -28,9 +31,27 @@ public class PsiDocCommentUtils {
         if (tags.length == 0){
             return Maps.newHashMap();
         }
-        Map<String, String> map = Arrays.stream(tags)
+        Map<String, Object> map = Arrays.stream(tags)
                 .filter(Objects::nonNull)
-                .collect(Collectors.toMap(t -> t.getName(), t -> t.getValueElement().getText()));
+                .collect(Collectors.toMap(t -> {
+                    if (t.getName().equals(PARAM)){
+                        PsiElement[] dataElements = t.getDataElements();
+                        if (dataElements.length > 0){
+                            return dataElements[0].getText();
+                        }
+                    }
+                    return t.getName();
+                }, t -> {
+                    if (t.getName().equals(PARAM)){
+                        PsiElement[] dataElements = t.getDataElements();
+                        if (dataElements.length > 1){
+                            return dataElements[1].getText();
+                        }else {
+                            return "";
+                        }
+                    }
+                    return t.getValueElement().getText();
+                }));
         return map;
     }
 

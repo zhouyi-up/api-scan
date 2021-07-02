@@ -4,13 +4,13 @@ import com.developtools.enums.MappingEnum;
 import com.developtools.model.ClassApiInfo;
 import com.developtools.model.MappingAnnotationInfo;
 import com.developtools.model.MethodApiInfo;
+import com.developtools.model.ParameterApiInfo;
 import com.google.common.collect.Lists;
+import com.intellij.lang.jvm.JvmParameter;
 import com.intellij.lang.jvm.annotation.JvmAnnotationAttribute;
 import com.intellij.lang.jvm.annotation.JvmAnnotationAttributeValue;
 import com.intellij.lang.jvm.annotation.JvmAnnotationConstantValue;
-import com.intellij.psi.PsiAnnotation;
-import com.intellij.psi.PsiClass;
-import com.intellij.psi.PsiMethod;
+import com.intellij.psi.*;
 import com.intellij.psi.javadoc.PsiDocComment;
 import com.intellij.psi.javadoc.PsiDocTag;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +27,11 @@ public class ApiUtils {
 
     public static final String MAPPING_VALUE = "value";
 
+    /**
+     * 获取Java类基本API信息
+     * @param psiClass
+     * @return
+     */
     public static ClassApiInfo toClassApiInfo(PsiClass psiClass){
         ClassApiInfo classApiInfo = new ClassApiInfo();
         classApiInfo.setPsiClass(psiClass);
@@ -57,7 +62,7 @@ public class ApiUtils {
         if (docComment == null){
             return classApiInfo;
         }
-        Map<String, String> tags = PsiDocCommentUtils.toTagMap(docComment);
+        Map<String, Object> tags = PsiDocCommentUtils.toTagMap(docComment);
         classApiInfo.setAttr(tags);
 
         String desc = PsiDocCommentUtils.toDocText(docComment);
@@ -66,7 +71,11 @@ public class ApiUtils {
         return classApiInfo;
     }
 
-
+    /**
+     * 获取每个方法的API信息
+     * @param psiMethod
+     * @return
+     */
     public static MethodApiInfo toMethodApiInfo(PsiMethod psiMethod){
         MethodApiInfo methodApiInfo = new MethodApiInfo();
         String name = psiMethod.getName();
@@ -94,10 +103,28 @@ public class ApiUtils {
                 method = value.getMethod();
             }
             methodApiInfo.setMethod(method);
+
+            break;
         }
 
+        PsiParameterList parameterList = psiMethod.getParameterList();
+        PsiParameter[] parameters = parameterList.getParameters();
+        for (PsiParameter parameter : parameters) {
+            ParameterApiInfo parameterApiInfo = toParameterApiInfo(parameter);
 
-
+        }
         return methodApiInfo;
+    }
+
+    public static ParameterApiInfo toParameterApiInfo(PsiParameter parameter){
+        ParameterApiInfo parameterApiInfo = new ParameterApiInfo();
+
+        String name = parameter.getName();
+        parameterApiInfo.setName(name);
+
+        String className = parameter.getType().getCanonicalText();
+        parameterApiInfo.setTypeName(className);
+
+        return parameterApiInfo;
     }
 }
