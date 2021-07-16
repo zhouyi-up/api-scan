@@ -7,6 +7,7 @@ import com.developtools.model.MappingAnnotationInfo;
 import com.developtools.model.MethodApiInfo;
 import com.developtools.model.ParameterApiInfo;
 import com.google.common.collect.Lists;
+import com.intellij.ide.plugins.PluginManager;
 import com.intellij.lang.jvm.JvmParameter;
 import com.intellij.lang.jvm.annotation.JvmAnnotationAttribute;
 import com.intellij.lang.jvm.annotation.JvmAnnotationAttributeValue;
@@ -144,6 +145,7 @@ public class ApiUtils {
             list.add(parameterApiInfo);
         } else {
             if (type instanceof PsiClassReferenceType) {
+                PluginManager instance = PluginManager.getInstance();
                 PsiClassReferenceType psiClassReferenceType = (PsiClassReferenceType) type;
                 PsiClass resolve = psiClassReferenceType.resolve();
                 assert resolve != null;
