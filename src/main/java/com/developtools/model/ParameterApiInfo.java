@@ -2,6 +2,8 @@ package com.developtools.model;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author liujun
  */
@@ -13,4 +15,6 @@ public class ParameterApiInfo {
 
     private String desc;
     private String name;
+
+    private List<ParameterApiInfo> parameters;
 }
