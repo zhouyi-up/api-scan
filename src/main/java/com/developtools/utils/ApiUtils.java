@@ -12,12 +12,16 @@ import com.intellij.lang.jvm.JvmParameter;
 import com.intellij.lang.jvm.annotation.JvmAnnotationAttribute;
 import com.intellij.lang.jvm.annotation.JvmAnnotationAttributeValue;
 import com.intellij.lang.jvm.annotation.JvmAnnotationConstantValue;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleManager;
+import com.intellij.openapi.project.Project;
 import com.intellij.psi.*;
 import com.intellij.psi.impl.source.PsiClassReferenceType;
 import com.intellij.psi.javadoc.PsiDocComment;
 import com.intellij.psi.javadoc.PsiDocTag;
 import org.apache.commons.lang3.StringUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -29,6 +33,46 @@ import java.util.stream.Collectors;
 public class ApiUtils {
 
     public static final String MAPPING_VALUE = "value";
+
+
+    public static List<ClassApiInfo> getApiForModule(Project project){
+
+        Module[] modules = ModuleManager.getInstance(project).getModules();
+
+        List<ClassApiInfo> classApi = Lists.newArrayList();
+        for (Module module : modules) {
+
+            ArrayList<String> controllerAnn = Lists.newArrayList("Controller", "RestController");
+            List<PsiAnnotation> controllerList = ModuleUtils.findPsiClassForAnnotationList(project, module, controllerAnn);
+
+            List<PsiClass> psiClassList = PsiAnnotationUtils.toPsiClass(controllerList);
+
+            List<ClassApiInfo> classApiInfos = Lists.newArrayList();
+            for (PsiClass psiClass : psiClassList) {
+                ClassApiInfo classApiInfo = handlePsiClass(psiClass);
+                classApiInfos.add(classApiInfo);
+            }
+
+            classApi.addAll(classApiInfos);
+        }
+
+        return classApi;
+    }
+
+    private static ClassApiInfo handlePsiClass(PsiClass psiClass) {
+        ClassApiInfo classApiInfo = ApiUtils.toClassApiInfo(psiClass);
+
+        List<MethodApiInfo> methodApiInfoList = Lists.newArrayList();
+        PsiMethod[] methods = psiClass.getMethods();
+        for (PsiMethod method : methods) {
+            MethodApiInfo methodApiInfo = ApiUtils.toMethodApiInfo(method);
+            LogsUtils.info(JSON.toJSONString(methodApiInfo));
+            methodApiInfoList.add(methodApiInfo);
+        }
+        classApiInfo.setMethodApiInfoList(methodApiInfoList);
+
+        return classApiInfo;
+    }
 
     /**
      * 获取Java类基本API信息
@@ -114,11 +158,16 @@ public class ApiUtils {
 
         PsiParameterList parameterList = psiMethod.getParameterList();
         PsiParameter[] parameters = parameterList.getParameters();
+
+        List<ParameterApiInfo> methodParameter = Lists.newArrayList();
         for (PsiParameter parameter : parameters) {
             LogsUtils.info("方法 {} 参数 {}", psiMethod.getName(), parameter.getName());
             List<ParameterApiInfo> parameterApiInfos = toParameterApiInfo(parameter, methodApiInfo.getAttr(), psiMethod);
             LogsUtils.info("方法 {} 参数 {}", JSON.toJSONString(parameterApiInfos));
+
+            methodParameter.addAll(parameterApiInfos);
         }
+        methodApiInfo.setParameterApiInfos(methodParameter);
         return methodApiInfo;
     }
 

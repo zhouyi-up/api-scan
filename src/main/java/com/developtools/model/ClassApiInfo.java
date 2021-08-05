@@ -4,6 +4,7 @@ import com.google.common.collect.Maps;
 import com.intellij.psi.PsiClass;
 import lombok.Data;
 
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -19,4 +20,6 @@ public class ClassApiInfo {
     private String classShortName;
 
     private PsiClass psiClass;
+
+    private List<MethodApiInfo> methodApiInfoList;
 }

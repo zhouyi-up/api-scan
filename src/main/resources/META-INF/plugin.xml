@@ -18,6 +18,8 @@
 
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
+        <toolWindow factoryClass="com.developtools.factory.ApiToolsFactory" id="ApiScan" anchor="right"/>
+        <applicationConfigurable parentId="tools" id="apiScan" displayName="ApiScan" instance="com.developtools.view.SettingView"/>
     </extensions>
 
     <actions>

@@ -35,28 +35,7 @@ public class RightScanBtn extends AnAction {
     public void actionPerformed(AnActionEvent e) {
         // TODO: insert action logic here
         Project project = e.getProject();
-        Module[] modules = ModuleManager.getInstance(project).getModules();
+        List<ClassApiInfo> classApiInfos = ApiUtils.getApiForModule(project);
 
-        for (Module module : modules) {
-
-            ArrayList<String> controllerAnn = Lists.newArrayList("Controller", "RestController");
-            List<PsiAnnotation> controllerList = ModuleUtils.findPsiClassForAnnotationList(project, module, controllerAnn);
-
-            List<PsiClass> psiClassList = PsiAnnotationUtils.toPsiClass(controllerList);
-
-            for (PsiClass psiClass : psiClassList) {
-                handlePsiClass(psiClass);
-            }
-        }
-    }
-
-    private void handlePsiClass(PsiClass psiClass) {
-        ClassApiInfo classApiInfo = ApiUtils.toClassApiInfo(psiClass);
-
-        PsiMethod[] methods = psiClass.getMethods();
-        for (PsiMethod method : methods) {
-            MethodApiInfo methodApiInfo = ApiUtils.toMethodApiInfo(method);
-            LogsUtils.info(JSON.toJSONString(methodApiInfo));
-        }
     }
 }
