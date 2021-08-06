@@ -1,37 +1,32 @@
 package com.developtools.view;
 
-import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.options.SearchableConfigurable;
-import com.intellij.openapi.util.NlsContexts;
-import org.jetbrains.annotations.NonNls;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
+import com.developtools.model.SettingModel;
 
 import javax.swing.*;
 
-public class SettingView implements SearchableConfigurable{
-    @Override
-    public @NotNull @NonNls String getId() {
-        return null;
+/**
+ * @author liujun
+ */
+public class SettingView {
+
+    private SettingModel settingModel;
+
+    public SettingView(SettingModel settingModel){
+        this.settingModel = settingModel;
     }
 
-    @Override
-    public @NlsContexts.ConfigurableName String getDisplayName() {
-        return null;
+    private JPanel settingPanel;
+    private JPanel tornaPanel;
+    private JTextField tornaAddressText;
+    private JTextField appKeyText;
+    private JTextField secretText;
+    private JTextField tokenText;
+
+    private void createUIComponents() {
+        // TODO: place custom component creation code here
     }
 
-    @Override
-    public @Nullable JComponent createComponent() {
-        return null;
-    }
-
-    @Override
-    public boolean isModified() {
-        return false;
-    }
-
-    @Override
-    public void apply() throws ConfigurationException {
-
+    public JPanel getSettingPanel() {
+        return settingPanel;
     }
 }
