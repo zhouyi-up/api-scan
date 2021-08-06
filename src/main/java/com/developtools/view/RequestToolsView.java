@@ -1,5 +1,7 @@
 package com.developtools.view;
 
+import com.developtools.model.SettingModel;
+import com.developtools.utils.DataUtils;
 import com.intellij.icons.AllIcons;
 import com.intellij.openapi.actionSystem.ActionManager;
 import com.intellij.openapi.actionSystem.AnAction;
@@ -17,10 +19,12 @@ import javax.swing.*;
 public class RequestToolsView extends SimpleToolWindowPanel {
 
     private Project project;
+    private DataUtils dataUtils;
 
     public RequestToolsView(Project project) {
         super(true);
         this.project = project;
+        this.dataUtils = DataUtils.getInstance(project);
         initBarBtn();
     }
 
@@ -34,8 +38,17 @@ public class RequestToolsView extends SimpleToolWindowPanel {
 
             }
         };
+        //设置
+        AnAction setting = new AnAction(AllIcons.FileTypes.Config) {
+            @Override
+            public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
+                SettingConfigurableDialogWrapper settingView = new SettingConfigurableDialogWrapper(project);
+                boolean b = settingView.showAndGet();
+            }
+        };
 
         defaultActionGroup.add(refresh);
+        defaultActionGroup.add(setting);
 
         JComponent barTools = ActionManager.getInstance().createActionToolbar("ApiScan", defaultActionGroup, true)
                 .getComponent();
