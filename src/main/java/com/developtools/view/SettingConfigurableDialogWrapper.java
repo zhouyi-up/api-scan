@@ -22,11 +22,11 @@ public class SettingConfigurableDialogWrapper extends DialogWrapper {
         this.settingModel = settingModel;
 
         setTitle("Torna配置");
-
+        init();
     }
 
     @Override
     protected @Nullable JComponent createCenterPanel() {
-        return new TornaSettingView(settingModel);
+        return new TornaSettingView(settingModel).getSettingPanel();
     }
 }
