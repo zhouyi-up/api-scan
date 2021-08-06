@@ -42,8 +42,7 @@ public class RequestToolsView extends SimpleToolWindowPanel {
         AnAction setting = new AnAction(AllIcons.FileTypes.Config) {
             @Override
             public void actionPerformed(@NotNull AnActionEvent anActionEvent) {
-                SettingConfigurableDialogWrapper settingView = new SettingConfigurableDialogWrapper(project);
-                boolean b = settingView.showAndGet();
+
             }
         };
 

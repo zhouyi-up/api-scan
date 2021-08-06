@@ -8,19 +8,10 @@ import com.intellij.psi.PsiManager;
 import com.intellij.util.keyFMap.KeyFMap;
 import org.jetbrains.annotations.NotNull;
 
-public class ScanAction extends AnAction {
+public class UploadToTornaAction extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent e) {
         // TODO: insert action logic here
-        System.out.println("ddddd");
-        Project project = e.getProject();
-        PsiManager psiManager = PsiManager.getInstance(project);
-        KeyFMap keyFMap = psiManager.get();
-        @NotNull Key[] keys = keyFMap.getKeys();
-        for (Key key : keys) {
-            String s = key.toString();
-            System.out.println(s);
-        }
     }
 }

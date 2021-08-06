@@ -23,12 +23,24 @@
 
     <actions>
         <!-- Add your actions here -->
-        <action id="ScanAction" class="com.developtools.actions.ScanAction" text="ScanAction" description="ScanAction">
-            <add-to-group group-id="ToolsMenu" anchor="first"/>
+        <group popup="true" id="com.developtools.actions.group" text="接口扫描">
+            <add-to-group group-id="ToolsMenu" anchor="last"/>
+        </group>
+        <group popup="true" id="com.developtools.actions.upload_group" text="上传至...">
+            <add-to-group group-id="com.developtools.actions.group" anchor="last"/>
+        </group>
+
+        <action id="com.developtools.actions.uploadTorna" class="com.developtools.actions.UploadToTornaAction" text="torna" description="ScanAction">
+            <add-to-group group-id="com.developtools.actions.upload_group" anchor="first"/>
         </action>
+
         <action id="RightScanBtn" class="com.developtools.actions.RightScanBtn" text="RightScanBtn"
                 description="RightScanBtn">
             <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
+        </action>
+        <action id="com.developtools.config.torna" class="com.developtools.actions.TornaConfigAction"
+                text="配置Torna" description="TornaConfigAction">
+            <add-to-group group-id="com.developtools.actions.upload_group" anchor="last"/>
         </action>
     </actions>
 </idea-plugin>
