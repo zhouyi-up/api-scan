@@ -1,13 +1,14 @@
 package com.developtools.converts;
+import com.google.common.collect.Lists;
 
 import com.alibaba.fastjson.JSON;
 import com.developtools.model.ApiModel;
 import com.developtools.model.ClassApiInfo;
 import com.developtools.model.MethodApiInfo;
 import com.developtools.model.ParameterApiInfo;
-import org.apache.commons.compress.utils.Lists;
 
 import java.util.List;
+import java.util.StringJoiner;
 
 /**
  * @author liujun
@@ -15,34 +16,55 @@ import java.util.List;
 public class ClassApiConvert {
 
     public static List<ApiModel> toApiModel(List<ClassApiInfo> classApiInfos){
+        List<ApiModel> apiModels = Lists.newArrayList();
         for (ClassApiInfo classApiInfo : classApiInfos) {
             List<MethodApiInfo> methodApiInfoList = classApiInfo.getMethodApiInfoList();
             for (MethodApiInfo methodApiInfo : methodApiInfoList) {
+                List<ApiModel.Param> apis = Lists.newArrayList();
+
                 List<ParameterApiInfo> parameterApiInfos = methodApiInfo.getParameterApiInfos();
                 for (ParameterApiInfo parameterApiInfo : parameterApiInfos) {
                     if (parameterApiInfo.getParameters() == null || parameterApiInfo.getParameters().isEmpty()){
-
+                        ApiModel.Param param = new ApiModel.Param();
+                        param.setName(parameterApiInfo.getName());
+                        param.setDesc(parameterApiInfo.getDesc());
+                        param.setType(parameterApiInfo.getTypeName());
+                        apis.add(param);
                     }else {
-                        List<ApiModel.Param> params = toParamList(parameterApiInfo);
-                        System.out.println(JSON.toJSONString(params));
+                        StringJoiner stringJoiner = new StringJoiner(".");
+                        List<ApiModel.Param> params = toParamList(stringJoiner,parameterApiInfo);
+                        apis.addAll(params);
                     }
-
                 }
+
+                String path = classApiInfo.getBasePath() + "/" + methodApiInfo.getPath();
+
+                ApiModel apiModel = new ApiModel();
+                apiModel.setPath(path);
+                apiModel.setRequestMethod(methodApiInfo.getMethodShortName());
+                apiModel.setContentType("");
+                apiModel.setName(methodApiInfo.getMethodName());
+                apiModel.setDesc(methodApiInfo.getDesc());
+                apiModel.setParamList(apis);
+                apiModels.add(apiModel);
             }
         }
-        return null;
+        return apiModels;
     }
 
 
-    public static List<ApiModel.Param> toParamList(ParameterApiInfo parameterApiInfo){
+    public static List<ApiModel.Param> toParamList(StringJoiner packName, ParameterApiInfo parameterApiInfo){
         List<ApiModel.Param> apis = Lists.newArrayList();
+
+        packName.add(parameterApiInfo.getName());
+        String string = packName.toString();
         if (parameterApiInfo.getParameters()!= null && !parameterApiInfo.getParameters().isEmpty()){
             for (ParameterApiInfo parameter : parameterApiInfo.getParameters()) {
-                if (parameterApiInfo.getParameters() != null && !parameterApiInfo.getParameters().isEmpty()){
-                    apis.addAll(toParamList(parameter));
+                if (parameter.getParameters() != null && !parameter.getParameters().isEmpty()){
+                    apis.addAll(toParamList(packName,parameter));
                 }else {
                     ApiModel.Param param = new ApiModel.Param();
-                    param.setName(parameterApiInfo.getName().concat(".").concat(parameter.getName()));
+                    param.setName(string.concat(".").concat(parameter.getName()));
                     param.setDesc(parameter.getDesc());
                     param.setType(parameter.getTypeName());
                     apis.add(param);
@@ -50,7 +72,7 @@ public class ClassApiConvert {
             }
         }else {
             ApiModel.Param param = new ApiModel.Param();
-            param.setName(parameterApiInfo.getName());
+            param.setName(string.concat(".").concat(parameterApiInfo.getName()));
             param.setDesc(parameterApiInfo.getDesc());
             param.setType(parameterApiInfo.getTypeName());
             apis.add(param);
