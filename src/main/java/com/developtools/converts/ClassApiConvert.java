@@ -41,7 +41,7 @@ public class ClassApiConvert {
 
                 ApiModel apiModel = new ApiModel();
                 apiModel.setPath(path);
-                apiModel.setRequestMethod(methodApiInfo.getMethodShortName());
+                apiModel.setRequestMethod(methodApiInfo.getMethod());
                 apiModel.setContentType("");
                 apiModel.setName(methodApiInfo.getMethodName());
                 apiModel.setDesc(methodApiInfo.getDesc());

@@ -1,11 +1,11 @@
 <idea-plugin>
     <id>com.developtools.api-doc</id>
-    <name>API Doc</name>
+    <name>API Scan</name>
     <vendor email="corelevip@gmail.com" url="http://j-tools.cn">liujun</vendor>
 
     <description><![CDATA[
-    Enter short description for your plugin here.<br>
-    <em>most HTML tags may be used</em>
+    扫描spring-web的API接口，上传到指定服务器，目前支持的服务有：
+        1.torna
     ]]></description>
 
     <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html
@@ -34,10 +34,10 @@
             <add-to-group group-id="com.developtools.actions.upload_group" anchor="first"/>
         </action>
 
-        <action id="RightScanBtn" class="com.developtools.actions.RightScanBtn" text="RightScanBtn"
-                description="RightScanBtn">
-            <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>
-        </action>
+<!--        <action id="RightScanBtn" class="com.developtools.actions.RightScanBtn" text="RightScanBtn"-->
+<!--                description="RightScanBtn">-->
+<!--            <add-to-group group-id="ProjectViewPopupMenu" anchor="first"/>-->
+<!--        </action>-->
         <action id="com.developtools.config.torna" class="com.developtools.actions.TornaConfigAction"
                 text="配置Torna" description="TornaConfigAction">
             <add-to-group group-id="com.developtools.actions.upload_group" anchor="last"/>

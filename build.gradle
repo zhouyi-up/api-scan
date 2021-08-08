@@ -20,6 +20,7 @@ dependencies {
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
 //    type 'IC'
+//    pluginName "Api Scan"
     version = '2021.2'
     plugins = ['java', 'properties', 'yaml', 'Kotlin']
 }
@@ -30,4 +31,10 @@ patchPluginXml {
 }
 test {
     useJUnitPlatform()
+}
+
+publishPlugin {
+    token System.getenv("IDEA_TOKEN")
+    println(getToken())
+    channels "DEV"
 }

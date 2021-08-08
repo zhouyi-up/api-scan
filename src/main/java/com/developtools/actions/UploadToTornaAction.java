@@ -75,8 +75,10 @@ public class UploadToTornaAction extends AnAction {
         folder.setItems(docItems);
 
         docPushRequest.setApis(Lists.newArrayList(folder));
+        docPushRequest.setDebugEnvs(Lists.newArrayList());
 
         DocPushResponse execute = client.execute(docPushRequest);
+        System.out.println(execute);
         if (execute.isSuccess()){
             System.out.println(execute.getCode());
         }else {
