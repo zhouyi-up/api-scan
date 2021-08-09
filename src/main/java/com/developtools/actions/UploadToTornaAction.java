@@ -83,7 +83,6 @@ public class UploadToTornaAction extends AnAction {
             NotificationUtils.getInstance(project).send("Torna", "上传成功");
         }else {
             NotificationUtils.getInstance(project).error("Torna", "上传失败");
-            System.out.println(execute.getMsg());
         }
     }
 }
