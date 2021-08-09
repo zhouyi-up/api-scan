@@ -16,8 +16,11 @@ import com.developtools.utils.NotificationUtils;
 import com.google.common.collect.Lists;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
 import com.intellij.openapi.project.Project;
-import org.apache.tools.ant.types.optional.depend.ClassfileSet;
+import org.jetbrains.annotations.NotNull;
 
 import static com.developtools.constants.TornaConstant.*;
 
@@ -29,13 +32,26 @@ public class UploadToTornaAction extends AnAction {
     @Override
     public void actionPerformed(AnActionEvent e) {
         // TODO: insert action logic here
+
         Project project = e.getProject();
+        ProgressManager instance = ProgressManager.getInstance();
+
+        Task.Backgroundable backgroundable = new Task.Backgroundable(project, "Up") {
+            @Override
+            public void run(@NotNull ProgressIndicator indicator) {
+                uploadTorna(project);
+            }
+        };
+
+        instance.run(backgroundable);
+    }
+
+    private void uploadTorna(Project project) {
         List<ClassApiInfo> classApiInfos = ApiUtils.getApiForModule(project);
 
         List<ApiModel> apiModels = ClassApiConvert.toApiModel(classApiInfos);
 
-
-        DataUtils dataUtils = DataUtils.getInstance(e.getProject());
+        DataUtils dataUtils = DataUtils.getInstance(project);
 
         SettingModel settingModel = new SettingModel();
         settingModel.setTornaServerAddress(dataUtils.getValue(HOST));
