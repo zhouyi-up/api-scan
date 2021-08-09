@@ -12,6 +12,7 @@ import com.developtools.model.ClassApiInfo;
 import com.developtools.model.SettingModel;
 import com.developtools.utils.ApiUtils;
 import com.developtools.utils.DataUtils;
+import com.developtools.utils.NotificationUtils;
 import com.google.common.collect.Lists;
 import com.intellij.openapi.actionSystem.AnAction;
 import com.intellij.openapi.actionSystem.AnActionEvent;
@@ -55,7 +56,7 @@ public class UploadToTornaAction extends AnAction {
         for (ApiModel apiModel : apiModels) {
 
             DocItem docItem = new DocItem();
-            docItem.setName(apiModel.getName());
+            docItem.setName(apiModel.getDesc());
             docItem.setDescription(apiModel.getDesc());
             docItem.setUrl(apiModel.getPath());
             docItem.setHttpMethod(apiModel.getRequestMethod());
@@ -78,10 +79,10 @@ public class UploadToTornaAction extends AnAction {
         docPushRequest.setDebugEnvs(Lists.newArrayList());
 
         DocPushResponse execute = client.execute(docPushRequest);
-        System.out.println(execute);
         if (execute.isSuccess()){
-            System.out.println(execute.getCode());
+            NotificationUtils.getInstance(project).send("Torna", "上传成功");
         }else {
+            NotificationUtils.getInstance(project).error("Torna", "上传失败");
             System.out.println(execute.getMsg());
         }
     }

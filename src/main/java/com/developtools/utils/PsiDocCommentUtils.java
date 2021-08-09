@@ -50,7 +50,11 @@ public class PsiDocCommentUtils {
                             return "";
                         }
                     }
-                    return t.getValueElement().getText();
+                    PsiDocTagValue valueElement = t.getValueElement();
+                    if (valueElement == null){
+                        return "";
+                    }
+                    return valueElement.getText();
                 }));
         return map;
     }

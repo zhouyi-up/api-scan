@@ -19,6 +19,7 @@
     <extensions defaultExtensionNs="com.intellij">
         <!-- Add your extensions here -->
 <!--        <toolWindow factoryClass="com.developtools.factory.ApiToolsFactory" id="ApiScan" anchor="right"/>-->
+        <notificationGroup id="API_SCAN_NOTIFICATION" displayType="BALLOON"/>
     </extensions>
 
     <actions>
