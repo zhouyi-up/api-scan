@@ -35,19 +35,20 @@ public class UploadToTornaAction extends AnAction {
 
         Project project = e.getProject();
         ProgressManager instance = ProgressManager.getInstance();
+        List<ClassApiInfo> classApiInfos = ApiUtils.getApiForModule(project);
 
         Task.Backgroundable backgroundable = new Task.Backgroundable(project, "Up") {
             @Override
             public void run(@NotNull ProgressIndicator indicator) {
-                uploadTorna(project);
+                uploadTorna(project, classApiInfos);
             }
         };
 
         instance.run(backgroundable);
     }
 
-    private void uploadTorna(Project project) {
-        List<ClassApiInfo> classApiInfos = ApiUtils.getApiForModule(project);
+    private void uploadTorna(Project project, List<ClassApiInfo> classApiInfos) {
+
 
         List<ApiModel> apiModels = ClassApiConvert.toApiModel(classApiInfos);
 

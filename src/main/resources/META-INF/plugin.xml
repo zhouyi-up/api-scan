@@ -4,8 +4,11 @@
     <vendor email="corelevip@gmail.com" url="http://j-tools.cn">liujun</vendor>
 
     <description><![CDATA[
-    扫描spring-web的API接口，上传到指定服务器，目前支持的服务有：
-        1.torna
+    This plug-in can quickly scan the web API. At present, the supported frameworks are:
+    <li>spring-web</li>
+
+    It also supports uploading to API management services. The supported platforms are
+    <li>torna</li>
     ]]></description>
 
     <!-- please see https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html

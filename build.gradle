@@ -6,7 +6,7 @@ plugins {
 }
 
 group 'com.developtools'
-version '1.0.0'
+version '1.0.2121'
 
 sourceCompatibility = 11
 
