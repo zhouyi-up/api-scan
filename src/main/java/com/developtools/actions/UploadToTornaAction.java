@@ -51,9 +51,6 @@ public class UploadToTornaAction extends AnAction {
 
     private void uploadTorna(Project project, List<ClassApiInfo> classApiInfos) {
 
-
-        List<ApiModel> apiModels = ClassApiConvert.toApiModel(classApiInfos);
-
         DataUtils dataUtils = DataUtils.getInstance(project);
 
         SettingModel settingModel = new SettingModel();
@@ -68,45 +65,10 @@ public class UploadToTornaAction extends AnAction {
 
         DocItem folder = new DocItem();
         folder.setIsFolder(Booleans.TRUE);
-        folder.setName("");
+        folder.setName("测试");
         folder.setUrl("");
-
-        List<DocItem> docItems = Lists.newArrayList();
-        for (ApiModel apiModel : apiModels) {
-
-            DocItem docItem = new DocItem();
-            docItem.setName(apiModel.getDesc());
-            docItem.setDescription(apiModel.getDesc());
-            docItem.setUrl(apiModel.getPath());
-            docItem.setHttpMethod(apiModel.getRequestMethod());
-
-            List<DocParamReq> collect = apiModel.getParamList()
-                    .stream().map(m -> {
-                DocParamReq docParamReq = new DocParamReq();
-                docParamReq.setDescription(m.getDesc());
-                docParamReq.setName(m.getName());
-                docParamReq.setType(m.getType());
-                return docParamReq;
-            }).collect(Collectors.toList());
-
-            docItem.setRequestParams(collect);
-            List<ApiModel.Param> returnList = apiModel.getReturnList();
-            if (returnList!= null || !returnList.isEmpty()){
-                List<DocParamResp> reslist = returnList.stream().map(m -> {
-                    DocParamResp docParamResp = new DocParamResp();
-                    docParamResp.setName(m.getName());
-                    docParamResp.setType(m.getType());
-                    docParamResp.setRequired((byte) 0);
-                    docParamResp.setDescription(m.getDesc());
-                    return docParamResp;
-                }).collect(Collectors.toList());
-                docItem.setResponseParams(reslist);
-            }
-
-            docItems.add(docItem);
-        }
+        List<DocItem> docItems = ClassApiConvert.toDocItemList(classApiInfos);
         folder.setItems(docItems);
-
         docPushRequest.setApis(Lists.newArrayList(folder));
         docPushRequest.setDebugEnvs(Lists.newArrayList());
 

@@ -59,6 +59,11 @@ public class ApiUtils {
         return classApi;
     }
 
+    /**
+     * 处理类
+     * @param psiClass
+     * @return
+     */
     private static ClassApiInfo handlePsiClass(PsiClass psiClass) {
         ClassApiInfo classApiInfo = ApiUtils.toClassApiInfo(psiClass);
 

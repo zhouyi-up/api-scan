@@ -1,4 +1,9 @@
 package com.developtools.converts;
+import cn.torna.sdk.param.DubboInfo;
+import cn.torna.sdk.param.DocParamResp;
+import cn.torna.sdk.param.EnumInfoParam;
+import cn.torna.sdk.param.DocItem;
+import cn.torna.sdk.param.DocParamReq;
 import com.google.common.collect.Lists;
 
 import com.alibaba.fastjson.JSON;
@@ -15,88 +20,114 @@ import java.util.StringJoiner;
  */
 public class ClassApiConvert {
 
-    public static List<ApiModel> toApiModel(List<ClassApiInfo> classApiInfos){
-        List<ApiModel> apiModels = Lists.newArrayList();
+    public static List<DocItem> toDocItemList(List<ClassApiInfo> classApiInfos){
+        List<DocItem> docItemList = Lists.newArrayList();
+        //类循环
         for (ClassApiInfo classApiInfo : classApiInfos) {
+            //方法集合
             List<MethodApiInfo> methodApiInfoList = classApiInfo.getMethodApiInfoList();
+            //方法循环
             for (MethodApiInfo methodApiInfo : methodApiInfoList) {
-
-                List<ApiModel.Param> apis = Lists.newArrayList();
-                List<ParameterApiInfo> parameterApiInfos = methodApiInfo.getParameterApiInfos();
-                for (ParameterApiInfo parameterApiInfo : parameterApiInfos) {
-                    if (parameterApiInfo.getParameters() == null || parameterApiInfo.getParameters().isEmpty()){
-                        ApiModel.Param param = new ApiModel.Param();
-                        param.setName(parameterApiInfo.getName());
-                        param.setDesc(parameterApiInfo.getDesc());
-                        param.setType(parameterApiInfo.getTypeName());
-                        apis.add(param);
-                    }else {
-                        StringJoiner stringJoiner = new StringJoiner(".");
-                        List<ApiModel.Param> params = toParamList(stringJoiner,parameterApiInfo);
-                        apis.addAll(params);
-                    }
-                }
                 String path = classApiInfo.getBasePath() + "/" + methodApiInfo.getPath();
 
-                ApiModel apiModel = new ApiModel();
-                apiModel.setPath(path);
-                apiModel.setRequestMethod(methodApiInfo.getMethod());
-                apiModel.setContentType("");
-                apiModel.setName(methodApiInfo.getMethodName());
-                apiModel.setDesc(methodApiInfo.getDesc());
-                apiModel.setParamList(apis);
-
+                //参数集合
+                List<ParameterApiInfo> parameterApiInfos = methodApiInfo.getParameterApiInfos();
+                //取参数集合
+                List<DocParamReq> docParamReqs =  toDocParamReq(parameterApiInfos);
 
                 ParameterApiInfo returnApiInfo = methodApiInfo.getReturnApiInfo();
-                List<ApiModel.Param> returnParamList = Lists.newArrayList();
-                if (returnApiInfo != null){
-                    List<ParameterApiInfo> parameters = returnApiInfo.getParameters();
-                    if (parameters == null || parameters.isEmpty()){
-                        ApiModel.Param param = new ApiModel.Param();
-                        param.setName(returnApiInfo.getName());
-                        param.setDesc(returnApiInfo.getDesc());
-                        param.setType(returnApiInfo.getTypeShortName());
-                        returnParamList.add(param);
-                    }else {
-                        StringJoiner stringJoiner = new StringJoiner(".");
-                        List<ApiModel.Param> params = toParamList(stringJoiner,returnApiInfo);
-                        returnParamList.addAll(params);
-                    }
-                    apiModel.setReturnList(returnParamList);
-                }
+                //取返回值集合
+                List<DocParamResp> docParamResps = toDocParamResp(returnApiInfo);
 
-
-                apiModels.add(apiModel);
+                DocItem docItem = new DocItem();
+                docItem.setName(methodApiInfo.getDesc());
+                docItem.setDescription(methodApiInfo.getDesc());
+                docItem.setAuthor("");
+                docItem.setUrl(path);
+                docItem.setHttpMethod(methodApiInfo.getMethod());
+                docItem.setContentType("");
+                docItem.setRequestParams(docParamReqs);
+                docItem.setResponseParams(Lists.newArrayList(docParamResps));
+                docItemList.add(docItem);
             }
         }
-        return apiModels;
+        return docItemList;
     }
 
-
-    public static List<ApiModel.Param> toParamList(StringJoiner packName, ParameterApiInfo parameterApiInfo){
-        List<ApiModel.Param> apis = Lists.newArrayList();
-
-        packName.add(parameterApiInfo.getName());
-        String string = packName.toString();
-        if (parameterApiInfo.getParameters()!= null && !parameterApiInfo.getParameters().isEmpty()){
-            for (ParameterApiInfo parameter : parameterApiInfo.getParameters()) {
-                if (parameter.getParameters() != null && !parameter.getParameters().isEmpty()){
-                    apis.addAll(toParamList(packName,parameter));
-                }else {
-                    ApiModel.Param param = new ApiModel.Param();
-                    param.setName(string.concat(".").concat(parameter.getName()));
-                    param.setDesc(parameter.getDesc());
-                    param.setType(parameter.getTypeName());
-                    apis.add(param);
-                }
-            }
+    private static List<DocParamResp> toDocParamResp(ParameterApiInfo parameterApiInfo){
+        List<ParameterApiInfo> parameters = parameterApiInfo.getParameters();
+        if (parameters!= null && !parameters.isEmpty()){
+            List<DocParamResp> docParamRespList = loopBuildDocParamResq(parameters);
+            return docParamRespList;
         }else {
-            ApiModel.Param param = new ApiModel.Param();
-            param.setName(string.concat(".").concat(parameterApiInfo.getName()));
-            param.setDesc(parameterApiInfo.getDesc());
-            param.setType(parameterApiInfo.getTypeName());
-            apis.add(param);
+            List<DocParamResp> docParamResps = Lists.newArrayList();
+            DocParamResp docParamResp = new DocParamResp();
+            docParamResp.setName(parameterApiInfo.getName());
+            docParamResp.setType(parameterApiInfo.getTypeShortName());
+            docParamResp.setRequired((byte)0);
+            docParamResp.setDescription(parameterApiInfo.getDesc());
+
+            docParamResps.add(docParamResp);
+            return docParamResps;
         }
-        return apis;
+    }
+
+    private static List<DocParamResp> loopBuildDocParamResq(List<ParameterApiInfo> parameterApiInfos){
+
+        List<DocParamResp> list = Lists.newArrayList();
+
+        for (ParameterApiInfo parameterApiInfo : parameterApiInfos) {
+            DocParamResp docParamResp = new DocParamResp();
+            docParamResp.setName(parameterApiInfo.getName());
+            docParamResp.setType(parameterApiInfo.getTypeShortName());
+            docParamResp.setRequired((byte)0);
+            docParamResp.setDescription(parameterApiInfo.getDesc());
+
+            //参数子类
+            List<ParameterApiInfo> parameters = parameterApiInfo.getParameters();
+            //判断是否存在子类
+            if (parameters != null && !parameters.isEmpty()){
+                List<DocParamResp> ch = loopBuildDocParamResq(parameters);
+                docParamResp.setChildren(ch);
+                list.add(docParamResp);
+            }else {
+                //没有子类则是基本类型参数直接处理
+                list.add(docParamResp);
+            }
+        }
+        return list;
+    }
+
+    /**
+     * 将参数转化为 torna参数
+     * @param parameterApiInfos
+     * @return
+     */
+    private static List<DocParamReq> toDocParamReq(List<ParameterApiInfo> parameterApiInfos){
+        return loopBuildDocParamReq(parameterApiInfos);
+    }
+
+    private static List<DocParamReq> loopBuildDocParamReq(List<ParameterApiInfo> parameterApiInfos){
+        List<DocParamReq> docParamReqs = Lists.newArrayList();
+        for (ParameterApiInfo parameterApiInfo : parameterApiInfos) {
+            DocParamReq docParamReq = new DocParamReq();
+            docParamReq.setName(parameterApiInfo.getName());
+            docParamReq.setType(parameterApiInfo.getTypeShortName());
+            docParamReq.setRequired((byte)0);
+            docParamReq.setDescription(parameterApiInfo.getDesc());
+
+            //参数子类
+            List<ParameterApiInfo> parameters = parameterApiInfo.getParameters();
+            //判断是否存在子类
+            if (parameters != null && !parameters.isEmpty()){
+                List<DocParamReq> ch = loopBuildDocParamReq(parameters);
+                docParamReq.setChildren(ch);
+                docParamReqs.add(docParamReq);
+            }else {
+                //没有子类则是基本类型参数直接处理
+                docParamReqs.add(docParamReq);
+            }
+        }
+        return docParamReqs;
     }
 }
