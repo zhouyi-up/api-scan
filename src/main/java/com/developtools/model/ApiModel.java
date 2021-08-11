@@ -16,6 +16,7 @@ public class ApiModel {
     private String name;
     private String desc;
     private List<Param> paramList;
+    private List<Param> returnList;
 
     @Data
     public static class Param{

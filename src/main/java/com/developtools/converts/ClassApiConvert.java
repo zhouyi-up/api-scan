@@ -20,8 +20,8 @@ public class ClassApiConvert {
         for (ClassApiInfo classApiInfo : classApiInfos) {
             List<MethodApiInfo> methodApiInfoList = classApiInfo.getMethodApiInfoList();
             for (MethodApiInfo methodApiInfo : methodApiInfoList) {
-                List<ApiModel.Param> apis = Lists.newArrayList();
 
+                List<ApiModel.Param> apis = Lists.newArrayList();
                 List<ParameterApiInfo> parameterApiInfos = methodApiInfo.getParameterApiInfos();
                 for (ParameterApiInfo parameterApiInfo : parameterApiInfos) {
                     if (parameterApiInfo.getParameters() == null || parameterApiInfo.getParameters().isEmpty()){
@@ -36,7 +36,6 @@ public class ClassApiConvert {
                         apis.addAll(params);
                     }
                 }
-
                 String path = classApiInfo.getBasePath() + "/" + methodApiInfo.getPath();
 
                 ApiModel apiModel = new ApiModel();
@@ -46,6 +45,27 @@ public class ClassApiConvert {
                 apiModel.setName(methodApiInfo.getMethodName());
                 apiModel.setDesc(methodApiInfo.getDesc());
                 apiModel.setParamList(apis);
+
+
+                ParameterApiInfo returnApiInfo = methodApiInfo.getReturnApiInfo();
+                List<ApiModel.Param> returnParamList = Lists.newArrayList();
+                if (returnApiInfo != null){
+                    List<ParameterApiInfo> parameters = returnApiInfo.getParameters();
+                    if (parameters == null || parameters.isEmpty()){
+                        ApiModel.Param param = new ApiModel.Param();
+                        param.setName(returnApiInfo.getName());
+                        param.setDesc(returnApiInfo.getDesc());
+                        param.setType(returnApiInfo.getTypeShortName());
+                        returnParamList.add(param);
+                    }else {
+                        StringJoiner stringJoiner = new StringJoiner(".");
+                        List<ApiModel.Param> params = toParamList(stringJoiner,returnApiInfo);
+                        returnParamList.addAll(params);
+                    }
+                    apiModel.setReturnList(returnParamList);
+                }
+
+
                 apiModels.add(apiModel);
             }
         }

@@ -1,9 +1,11 @@
 package com.developtools.actions;
+import cn.torna.sdk.param.EnumInfoParam;
 
 import cn.torna.sdk.client.OpenClient;
 import cn.torna.sdk.common.Booleans;
 import cn.torna.sdk.param.DocItem;
 import cn.torna.sdk.param.DocParamReq;
+import cn.torna.sdk.param.DocParamResp;
 import cn.torna.sdk.request.DocPushRequest;
 import cn.torna.sdk.response.DocPushResponse;
 import com.developtools.converts.ClassApiConvert;
@@ -66,7 +68,7 @@ public class UploadToTornaAction extends AnAction {
 
         DocItem folder = new DocItem();
         folder.setIsFolder(Booleans.TRUE);
-        folder.setName("支付");
+        folder.setName("");
         folder.setUrl("");
 
         List<DocItem> docItems = Lists.newArrayList();
@@ -78,7 +80,8 @@ public class UploadToTornaAction extends AnAction {
             docItem.setUrl(apiModel.getPath());
             docItem.setHttpMethod(apiModel.getRequestMethod());
 
-            List<DocParamReq> collect = apiModel.getParamList().stream().map(m -> {
+            List<DocParamReq> collect = apiModel.getParamList()
+                    .stream().map(m -> {
                 DocParamReq docParamReq = new DocParamReq();
                 docParamReq.setDescription(m.getDesc());
                 docParamReq.setName(m.getName());
@@ -87,6 +90,18 @@ public class UploadToTornaAction extends AnAction {
             }).collect(Collectors.toList());
 
             docItem.setRequestParams(collect);
+            List<ApiModel.Param> returnList = apiModel.getReturnList();
+            if (returnList!= null || !returnList.isEmpty()){
+                List<DocParamResp> reslist = returnList.stream().map(m -> {
+                    DocParamResp docParamResp = new DocParamResp();
+                    docParamResp.setName(m.getName());
+                    docParamResp.setType(m.getType());
+                    docParamResp.setRequired((byte) 0);
+                    docParamResp.setDescription(m.getDesc());
+                    return docParamResp;
+                }).collect(Collectors.toList());
+                docItem.setResponseParams(reslist);
+            }
 
             docItems.add(docItem);
         }
