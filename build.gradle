@@ -26,8 +26,10 @@ intellij {
 }
 patchPluginXml {
     changeNotes = """
-      Add change notes here.<br>
-      <em>most HTML tags may be used</em>"""
+      <ul>
+        <li>20210811.add returnInfo</li>
+      </ul>
+      """
 }
 publishPlugin{
     token System.getenv("IDEA_TOKEN")

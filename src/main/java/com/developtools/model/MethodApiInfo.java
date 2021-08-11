@@ -22,4 +22,5 @@ public class MethodApiInfo {
     private Map<String, Object> attr = Maps.newHashMap();
 
     private List<ParameterApiInfo> parameterApiInfos;
+    private ParameterApiInfo returnApiInfo;
 }

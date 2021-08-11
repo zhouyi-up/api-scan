@@ -29,12 +29,16 @@ public class NotificationUtils {
     }
 
     public void send(String title, String content){
-        Notification notification = notificationGroup.createNotification(title, content, NotificationType.INFORMATION);
+        Notification notification = notificationGroup.createNotification(NotificationType.INFORMATION);
+        notification.setTitle(title);
+        notification.setContent(content);
         notification.notify(project);
     }
 
     public void error(String title, String content){
-        Notification notification = notificationGroup.createNotification(title, content, NotificationType.ERROR);
+        Notification notification = notificationGroup.createNotification(NotificationType.ERROR);
+        notification.setTitle(title);
+        notification.setContent(content);
         notification.notify(project);
     }
 }

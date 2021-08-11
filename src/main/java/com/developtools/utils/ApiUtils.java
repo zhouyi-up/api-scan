@@ -155,7 +155,7 @@ public class ApiUtils {
 
 //            break;
         }
-
+        //方法参数
         PsiParameterList parameterList = psiMethod.getParameterList();
         PsiParameter[] parameters = parameterList.getParameters();
 
@@ -168,7 +168,45 @@ public class ApiUtils {
             methodParameter.addAll(parameterApiInfos);
         }
         methodApiInfo.setParameterApiInfos(methodParameter);
+
+        //返回值
+        PsiType returnType = psiMethod.getReturnType();
+        if (returnType == null || returnType.getCanonicalText().equals(Void.class.getCanonicalName())){
+            return methodApiInfo;
+        }
+        ParameterApiInfo parameterApiInfo = toReturnParameterInfo(returnType, methodApiInfo.getAttr());
+        methodApiInfo.setReturnApiInfo(parameterApiInfo);
+
+
         return methodApiInfo;
+    }
+
+    public static ParameterApiInfo toReturnParameterInfo(PsiType returnType, Map<String, Object> attrs) {
+        ParameterApiInfo parameterApiInfo = new ParameterApiInfo();
+
+        String className = returnType.getCanonicalText();
+        //            String name = returnType.getName();
+//            parameterApiInfo.setName(name);
+        parameterApiInfo.setTypeName(className);
+
+        String[] split = className.split("\\.");
+        parameterApiInfo.setTypeShortName(split[split.length - 1]);
+
+//            Object object = attrs.get(name);
+//            if (object != null) {
+//                parameterApiInfo.setDesc(String.valueOf(object));
+//            }
+
+        boolean isBasicClass = ClassCheckUtils.isBasicClass(className);
+        if (returnType instanceof PsiClassReferenceType && !isBasicClass) {
+            PsiClassReferenceType psiClassReferenceType = (PsiClassReferenceType) returnType;
+            PsiClass resolve = psiClassReferenceType.resolve();
+            assert resolve != null;
+            List<ParameterApiInfo> parameters = getParameters(resolve);
+            parameterApiInfo.setParameters(parameters);
+        }
+
+        return parameterApiInfo;
     }
 
     public static List<ParameterApiInfo> toParameterApiInfo(PsiParameter parameter, Map<String, Object> attrs, PsiMethod psiMethod) {
@@ -194,7 +232,6 @@ public class ApiUtils {
             list.add(parameterApiInfo);
         } else {
             if (type instanceof PsiClassReferenceType) {
-                PluginManager instance = PluginManager.getInstance();
                 PsiClassReferenceType psiClassReferenceType = (PsiClassReferenceType) type;
                 PsiClass resolve = psiClassReferenceType.resolve();
                 assert resolve != null;
