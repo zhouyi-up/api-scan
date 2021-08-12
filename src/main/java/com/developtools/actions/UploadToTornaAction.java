@@ -33,7 +33,6 @@ public class UploadToTornaAction extends AnAction {
 
     @Override
     public void actionPerformed(AnActionEvent e) {
-        // TODO: insert action logic here
 
         Project project = e.getProject();
         ProgressManager instance = ProgressManager.getInstance();
@@ -63,13 +62,10 @@ public class UploadToTornaAction extends AnAction {
 
         DocPushRequest docPushRequest = new DocPushRequest(settingModel.getTornaToken());
 
-        DocItem folder = new DocItem();
-        folder.setIsFolder(Booleans.TRUE);
-        folder.setName("测试");
-        folder.setUrl("");
         List<DocItem> docItems = ClassApiConvert.toDocItemList(classApiInfos);
-        folder.setItems(docItems);
-        docPushRequest.setApis(Lists.newArrayList(folder));
+
+        List<DocItem> folderList = ClassApiConvert.toFolderList(classApiInfos);
+        docPushRequest.setApis(folderList);
         docPushRequest.setDebugEnvs(Lists.newArrayList());
 
         DocPushResponse execute = client.execute(docPushRequest);

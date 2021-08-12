@@ -6,6 +6,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.javadoc.PsiDocComment;
 import com.intellij.psi.javadoc.PsiDocTag;
 import com.intellij.psi.javadoc.PsiDocTagValue;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.Arrays;
 import java.util.Map;
@@ -20,8 +21,6 @@ import java.util.stream.Collectors;
 public class PsiDocCommentUtils {
 
     public static final String PARAM = "param";
-    private static Pattern DOC_PATTERN = Pattern.compile("\\/\\*\\* {0,}\\*{0,} {0,}(.{0,}) {0,}\\*{0,} {0,}@.{0,}\\*\\/");
-    private static Pattern DOC_PATTERN_ALL = Pattern.compile("\\/\\*\\* {0,}\\*{0,} {0,}(.{0,}) {0,}\\*{0,} {0,}@{0,}.{0,}\\*\\/");
 
     public static Map<String, Object> toTagMap(PsiDocComment psiDocComment){
         if (psiDocComment == null){
@@ -64,20 +63,34 @@ public class PsiDocCommentUtils {
             return "";
         }
         String text = psiDocComment.getText().replaceAll("\n", "");
-        Matcher matcher = DOC_PATTERN.matcher(text);
-        if (!matcher.find()){
-            Matcher matcherAll = DOC_PATTERN_ALL.matcher(text);
-            if (matcherAll.find()){
-                if (matcherAll.groupCount() >= 1){
-                    return matcherAll.group(1);
-                }
-            }
+        int index = text.indexOf("/**");
+        if (index == 0){
+            text = text.substring(2);
+        }
+        int in = text.indexOf("*/");
+        if (in == text.length() -2){
+            text = text.substring(0, text.length() -2);
+        }
+
+        String[] strArr = text.split("\\*");
+        if (strArr.length == 0){
             return "";
         }
-        int num = matcher.groupCount();
-        if (num >= 1){
-            return matcher.group(1);
+        StringBuilder builder = new StringBuilder();
+        for (String str : strArr) {
+            if (StringUtils.isEmpty(str)) {
+                continue;
+            }
+            if (str.contains("/**")) {
+                continue;
+            }
+            if (str.contains("*/")) {
+                continue;
+            }
+            if (!str.contains("@")){
+                builder.append(str);
+            }
         }
-        return "";
+        return builder.toString();
     }
 }

@@ -1,4 +1,5 @@
 package com.developtools.converts;
+import cn.torna.sdk.common.Booleans;
 import cn.torna.sdk.param.DubboInfo;
 import cn.torna.sdk.param.DocParamResp;
 import cn.torna.sdk.param.EnumInfoParam;
@@ -20,37 +21,64 @@ import java.util.StringJoiner;
  */
 public class ClassApiConvert {
 
+
+    public static List<DocItem> toFolderList(List<ClassApiInfo> classApiInfos){
+        List<DocItem> docItemList = Lists.newArrayList();
+        //类循环
+        for (ClassApiInfo classApiInfo : classApiInfos) {
+            List<DocItem> docItems = convertForClassApiInfo(classApiInfo);
+
+            DocItem folder = new DocItem();
+            folder.setIsFolder(Booleans.TRUE);
+            folder.setName(classApiInfo.getDesc());
+            folder.setUrl(classApiInfo.getBasePath());
+
+            folder.setItems(docItems);
+
+            docItemList.add(folder);
+        }
+        return docItemList;
+    }
+
     public static List<DocItem> toDocItemList(List<ClassApiInfo> classApiInfos){
         List<DocItem> docItemList = Lists.newArrayList();
         //类循环
         for (ClassApiInfo classApiInfo : classApiInfos) {
-            //方法集合
-            List<MethodApiInfo> methodApiInfoList = classApiInfo.getMethodApiInfoList();
-            //方法循环
-            for (MethodApiInfo methodApiInfo : methodApiInfoList) {
-                String path = classApiInfo.getBasePath() + "/" + methodApiInfo.getPath();
-
-                //参数集合
-                List<ParameterApiInfo> parameterApiInfos = methodApiInfo.getParameterApiInfos();
-                //取参数集合
-                List<DocParamReq> docParamReqs =  toDocParamReq(parameterApiInfos);
-
-                ParameterApiInfo returnApiInfo = methodApiInfo.getReturnApiInfo();
-                //取返回值集合
-                List<DocParamResp> docParamResps = toDocParamResp(returnApiInfo);
-
-                DocItem docItem = new DocItem();
-                docItem.setName(methodApiInfo.getDesc());
-                docItem.setDescription(methodApiInfo.getDesc());
-                docItem.setAuthor("");
-                docItem.setUrl(path);
-                docItem.setHttpMethod(methodApiInfo.getMethod());
-                docItem.setContentType("");
-                docItem.setRequestParams(docParamReqs);
-                docItem.setResponseParams(Lists.newArrayList(docParamResps));
-                docItemList.add(docItem);
-            }
+            List<DocItem> docItems = convertForClassApiInfo(classApiInfo);
+            docItemList.addAll(docItems);
         }
+        return docItemList;
+    }
+
+    private static  List<DocItem> convertForClassApiInfo(ClassApiInfo classApiInfo) {
+        List<DocItem> docItemList = Lists.newArrayList();
+        //方法集合
+        List<MethodApiInfo> methodApiInfoList = classApiInfo.getMethodApiInfoList();
+        //方法循环
+        for (MethodApiInfo methodApiInfo : methodApiInfoList) {
+            String path = classApiInfo.getBasePath() + "/" + methodApiInfo.getPath();
+
+            //参数集合
+            List<ParameterApiInfo> parameterApiInfos = methodApiInfo.getParameterApiInfos();
+            //取参数集合
+            List<DocParamReq> docParamReqs =  toDocParamReq(parameterApiInfos);
+
+            ParameterApiInfo returnApiInfo = methodApiInfo.getReturnApiInfo();
+            //取返回值集合
+            List<DocParamResp> docParamResps = toDocParamResp(returnApiInfo);
+
+            DocItem docItem = new DocItem();
+            docItem.setName(methodApiInfo.getDesc());
+            docItem.setDescription(methodApiInfo.getDesc());
+            docItem.setAuthor("");
+            docItem.setUrl(path);
+            docItem.setHttpMethod(methodApiInfo.getMethod());
+            docItem.setContentType("");
+            docItem.setRequestParams(docParamReqs);
+            docItem.setResponseParams(Lists.newArrayList(docParamResps));
+            docItemList.add(docItem);
+        }
+
         return docItemList;
     }
 
