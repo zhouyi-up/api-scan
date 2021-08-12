@@ -62,8 +62,6 @@ public class UploadToTornaAction extends AnAction {
 
         DocPushRequest docPushRequest = new DocPushRequest(settingModel.getTornaToken());
 
-        List<DocItem> docItems = ClassApiConvert.toDocItemList(classApiInfos);
-
         List<DocItem> folderList = ClassApiConvert.toFolderList(classApiInfos);
         docPushRequest.setApis(folderList);
         docPushRequest.setDebugEnvs(Lists.newArrayList());

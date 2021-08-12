@@ -18,6 +18,8 @@ public class MethodApiInfo {
     private String method;
     private String path;
 
+    private String contentType;
+
     private String desc;
     private Map<String, Object> attr = Maps.newHashMap();
 

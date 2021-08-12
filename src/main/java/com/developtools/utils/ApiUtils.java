@@ -1,6 +1,7 @@
 package com.developtools.utils;
 
 import com.alibaba.fastjson.JSON;
+import com.developtools.enums.ContentTypeEnum;
 import com.developtools.enums.MappingEnum;
 import com.developtools.model.ClassApiInfo;
 import com.developtools.model.MappingAnnotationInfo;
@@ -164,8 +165,15 @@ public class ApiUtils {
         PsiParameterList parameterList = psiMethod.getParameterList();
         PsiParameter[] parameters = parameterList.getParameters();
 
+        String contentType = null;
         List<ParameterApiInfo> methodParameter = Lists.newArrayList();
         for (PsiParameter parameter : parameters) {
+            if (contentType == null){
+                PsiAnnotation annotation = parameter.getAnnotation(ContentTypeEnum.REQUEST_BODY.getAnnotationClassName());
+                if (annotation != null){
+                    contentType = ContentTypeEnum.REQUEST_BODY.getContentType();
+                }
+            }
             LogsUtils.info("方法 {} 参数 {}", psiMethod.getName(), parameter.getName());
             List<ParameterApiInfo> parameterApiInfos = toParameterApiInfo(parameter, methodApiInfo.getAttr(), psiMethod);
             LogsUtils.info("方法 {} 参数 {}", JSON.toJSONString(parameterApiInfos));
@@ -173,6 +181,8 @@ public class ApiUtils {
             methodParameter.addAll(parameterApiInfos);
         }
         methodApiInfo.setParameterApiInfos(methodParameter);
+
+        methodApiInfo.setContentType(contentType);
 
         //返回值
         PsiType returnType = psiMethod.getReturnType();

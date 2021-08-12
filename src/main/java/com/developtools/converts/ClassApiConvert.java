@@ -73,9 +73,10 @@ public class ClassApiConvert {
             docItem.setAuthor("");
             docItem.setUrl(path);
             docItem.setHttpMethod(methodApiInfo.getMethod());
-            docItem.setContentType("");
             docItem.setRequestParams(docParamReqs);
             docItem.setResponseParams(Lists.newArrayList(docParamResps));
+            docItem.setContentType(methodApiInfo.getContentType());
+
             docItemList.add(docItem);
         }
 
