@@ -4,9 +4,10 @@
     <vendor email="corelevip@gmail.com" url="http://j-tools.cn">liujun</vendor>
 
     <description><![CDATA[
+    This plug-in can scan the web interface provided in Java code and upload the web interface information to the API management platform. At present, it supports the spring framework interface. More support frameworks are being developed to support uploading to Torna (an API management platform), and more platforms will be supported. Please look forward to it.
+
     This plug-in can quickly scan the web API. At present, the supported frameworks are:
     <li>spring-web</li>
-
     It also supports uploading to API management services. The supported platforms are
     <li>torna</li>
     ]]></description>
