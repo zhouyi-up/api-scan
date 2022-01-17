@@ -1,15 +1,10 @@
 package com.developtools.actions;
-import cn.torna.sdk.param.EnumInfoParam;
 
 import cn.torna.sdk.client.OpenClient;
-import cn.torna.sdk.common.Booleans;
 import cn.torna.sdk.param.DocItem;
-import cn.torna.sdk.param.DocParamReq;
-import cn.torna.sdk.param.DocParamResp;
 import cn.torna.sdk.request.DocPushRequest;
 import cn.torna.sdk.response.DocPushResponse;
 import com.developtools.converts.ClassApiConvert;
-import com.developtools.model.ApiModel;
 import com.developtools.model.ClassApiInfo;
 import com.developtools.model.SettingModel;
 import com.developtools.utils.ApiUtils;
@@ -27,8 +22,10 @@ import org.jetbrains.annotations.NotNull;
 import static com.developtools.constants.TornaConstant.*;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
+/**
+ * @author corel
+ */
 public class UploadToTornaAction extends AnAction {
 
     @Override
@@ -65,12 +62,17 @@ public class UploadToTornaAction extends AnAction {
         List<DocItem> folderList = ClassApiConvert.toFolderList(classApiInfos);
         docPushRequest.setApis(folderList);
         docPushRequest.setDebugEnvs(Lists.newArrayList());
-
-        DocPushResponse execute = client.execute(docPushRequest);
-        if (execute.isSuccess()){
-            NotificationUtils.getInstance(project).send("Torna", "上传成功");
-        }else {
-            NotificationUtils.getInstance(project).error("Torna", "上传失败");
+        try {
+            DocPushResponse execute = client.execute(docPushRequest);
+            if (execute.isSuccess()){
+                NotificationUtils.getInstance(project).send("Torna", "上传成功");
+            }else {
+                NotificationUtils.getInstance(project).error("Torna", "上传失败");
+            }
+        } catch (Exception exception){
+            exception.printStackTrace();
+            NotificationUtils.getInstance(project).error("Upload error", exception.toString());
         }
+
     }
 }

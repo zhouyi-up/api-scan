@@ -15,25 +15,30 @@ repositories {
 }
 
 dependencies {
-    implementation 'cn.hutool:hutool-all:5.7.2'
-    implementation 'cn.torna:torna-sdk:1.0.10'
+    implementation 'cn.hutool:hutool-all:5.7.19'
+    implementation 'cn.torna:torna-sdk:1.0.12'
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version = '2021.2'
+    version = '2021.3'
     plugins = ['java', 'properties', 'yaml', 'Kotlin']
 }
 patchPluginXml {
     changeNotes = """
-      <ul>
-        <li>20210812.I can use.</li>
-        <li>20210801.init</li>
-        <li>20210811.add returnInfo</li>
-      </ul>
+      <b>20220117</b>
+      <ol>
+        <li>Try upload exception.</li>
+        <li>Updated version for library</li>
+        <li>Updated Sdk to 2021.3</li>
+      </ol>
+      <li>20210812.I can use.</li>
+      <li>20210801.init</li>
+      <li>20210811.add returnInfo</li>
       """
 }
 publishPlugin{
     token System.getenv("IDEA_TOKEN")
-    channels "DEV"
+    println(token)
+    channels "EAP"
 }

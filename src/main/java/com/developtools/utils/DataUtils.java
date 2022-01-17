@@ -9,12 +9,10 @@ import com.intellij.openapi.project.Project;
 public class DataUtils {
 
     private static DataUtils dataUtils;
-    private Project project;
 
-    private PropertiesComponent propertiesComponent;
+    private final PropertiesComponent propertiesComponent;
 
     private DataUtils(Project project){
-        this.project = project;
         propertiesComponent = PropertiesComponent.getInstance(project);
     }
 

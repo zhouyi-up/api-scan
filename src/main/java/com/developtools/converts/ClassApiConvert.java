@@ -1,20 +1,15 @@
 package com.developtools.converts;
 import cn.torna.sdk.common.Booleans;
-import cn.torna.sdk.param.DubboInfo;
 import cn.torna.sdk.param.DocParamResp;
-import cn.torna.sdk.param.EnumInfoParam;
 import cn.torna.sdk.param.DocItem;
 import cn.torna.sdk.param.DocParamReq;
 import com.google.common.collect.Lists;
 
-import com.alibaba.fastjson.JSON;
-import com.developtools.model.ApiModel;
 import com.developtools.model.ClassApiInfo;
 import com.developtools.model.MethodApiInfo;
 import com.developtools.model.ParameterApiInfo;
 
 import java.util.List;
-import java.util.StringJoiner;
 
 /**
  * @author liujun
