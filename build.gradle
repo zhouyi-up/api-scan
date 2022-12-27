@@ -1,12 +1,12 @@
 plugins {
     id 'java'
-    id 'org.jetbrains.intellij' version '0.7.3'
+    id 'org.jetbrains.intellij' version '1.11.0'
 //    id 'org.jetbrains.kotlin.jvm' version '1.4.32'
-    id "io.freefair.lombok" version "6.0.0-m2"
+    id "io.freefair.lombok" version "6.6.1"
 }
 
 group 'com.developtools'
-version '1.0.2124'
+version '1.0.2231'
 
 sourceCompatibility = 11
 
@@ -17,11 +17,17 @@ repositories {
 dependencies {
     implementation 'cn.hutool:hutool-all:5.7.19'
     implementation 'cn.torna:torna-sdk:1.0.12'
+
+//    compileOnly 'org.projectlombok:lombok:1.18.24'
+//    annotationProcessor 'org.projectlombok:lombok:1.18.24'
+//
+//    testCompileOnly 'org.projectlombok:lombok:1.18.24'
+//    testAnnotationProcessor 'org.projectlombok:lombok:1.18.24'
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version = '2021.3'
+    version = '2022.3.1'
     plugins = ['java', 'properties', 'yaml', 'Kotlin']
 }
 patchPluginXml {
@@ -38,7 +44,7 @@ patchPluginXml {
       """
 }
 publishPlugin{
-    token System.getenv("IDEA_TOKEN")
-    println(token)
-    channels "EAP"
+//    token System.getenv("IDEA_TOKEN")
+//    println(token)
+//    channels "EAP"
 }
